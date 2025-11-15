@@ -10,7 +10,8 @@ export default function Page() {
   const { data, error } = useSWR("/api/aoc", fetcher, { refreshInterval: 900000 }); // 15 min
 
   const members: Member[] = data?.members ?? [];
-  const last = data?.last ?? null;
+  const last = data?.updated ?? null;
+  console.log("Leaderboard data:", data);
 
   return (
     <main className="min-h-screen px-6 py-8">
