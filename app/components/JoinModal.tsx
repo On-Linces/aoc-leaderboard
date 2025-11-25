@@ -16,7 +16,7 @@ export default function JoinModal({
             <h2 className="text-xl font-bold text-white mb-4">¿Cómo unirte al leaderboard?</h2>
 
             <ol className="text-slate-300 space-y-2 list-decimal ml-5">
-              <li>Inicia sesión en <strong>adventofcode.com</strong>.</li>
+              <li>Inicia sesión en <strong>adventofcode.com</strong> utilizando tu cuenta institucional de google (para obtener tu nombre).</li>
               <li>Ve a <strong>Leaderboards → Private Leaderboard</strong>.</li>
               <li>Ingresa el código:</li>
 
