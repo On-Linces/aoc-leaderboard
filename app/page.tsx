@@ -69,7 +69,7 @@ export default function Page() {
     const now = new Date();
     // Month is 0-indexed (11 = December)
     // SIMULACIÓN ACTIVADA: Cambiar a (now.getMonth() === 11 && now.getDate() === 25) para producción
-    if (true) {
+    if (now.getMonth() === 11 && now.getDate() === 25) {
       const duration = 15 * 1000;
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
