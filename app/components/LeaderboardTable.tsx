@@ -17,9 +17,9 @@ export default function Leaderboard({ members }: { members: Member[] }) {
   };
 
   const getRowStyle = (index: number) => {
-    if (index === 0) return "bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-transparent border-l-4 border-l-yellow-400 text-yellow-100";
-    if (index === 1) return "bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent border-l-4 border-l-slate-300 text-slate-100";
-    if (index === 2) return "bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent border-l-4 border-l-orange-500 text-orange-100";
+    if (index === 0) return "bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-transparent border-l-4 border-l-yellow-400 text-yellow-100 glow-gold";
+    if (index === 1) return "bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent border-l-4 border-l-slate-300 text-slate-100 glow-silver";
+    if (index === 2) return "bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent border-l-4 border-l-orange-500 text-orange-100 glow-bronze";
     return "border-l-4 border-l-transparent hover:bg-white/5";
   };
 
