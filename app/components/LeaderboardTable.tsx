@@ -1,26 +1,59 @@
 "use client";
 import { useEffect, useState, useRef, Fragment } from "react";
 import MemberModal, { Member } from "./MemberModal";
+import VersusModal from "./VersusModal";
 
 export default function Leaderboard({ members, dailyChampionId }: { members: Member[], dailyChampionId?: string | number | null }) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  
+  // --- Versus Mode State ---
+  const [isVersusMode, setIsVersusMode] = useState(false);
+  const [selectedVersus, setSelectedVersus] = useState<Member[]>([]);
+  const [showVersusModal, setShowVersusModal] = useState(false);
 
   const toggleRow = (index: number) => {
+    const member = members[index];
+
+    if (isVersusMode) {
+      // Lógica de selección para Versus
+      if (selectedVersus.find(m => m.id === member.id)) {
+        setSelectedVersus(selectedVersus.filter(m => m.id !== member.id));
+      } else {
+        if (selectedVersus.length < 2) {
+          const newSelection = [...selectedVersus, member];
+          setSelectedVersus(newSelection);
+          if (newSelection.length === 2) {
+            setShowVersusModal(true);
+          }
+        }
+      }
+      return;
+    }
+
     // En móvil expande, en desktop abre modal
     if (window.innerWidth < 768) {
       setExpandedRow(expandedRow === index ? null : index);
     } else {
-      setSelectedMember(members[index]);
+      setSelectedMember(member);
     }
   };
 
   const handleNameClick = (e: React.MouseEvent, member: Member) => {
     e.stopPropagation();
-    setSelectedMember(member);
+    if (isVersusMode) {
+      toggleRow(members.findIndex(m => m.id === member.id));
+    } else {
+      setSelectedMember(member);
+    }
   };
 
   const getRowStyle = (index: number, memberId: string | number) => {
+    // Estilo de selección Versus
+    if (isVersusMode && selectedVersus.find(m => m.id === memberId)) {
+      return "bg-indigo-600/30 border-l-4 border-l-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.3)]";
+    }
+
     if (memberId === dailyChampionId) return "bg-gradient-to-r from-orange-600/20 via-red-500/10 to-transparent border-l-4 border-l-orange-500 text-orange-100 animate-pulse-slow glow-fire";
     if (index === 0) return "bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-transparent border-l-4 border-l-yellow-400 text-yellow-100 glow-gold";
     if (index === 1) return "bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent border-l-4 border-l-slate-300 text-slate-100 glow-silver";
@@ -30,7 +63,25 @@ export default function Leaderboard({ members, dailyChampionId }: { members: Mem
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">AOC Leaderboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-center">AOC Leaderboard</h1>
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setIsVersusMode(!isVersusMode);
+              setSelectedVersus([]);
+            }}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition ${
+              isVersusMode 
+                ? "bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30" 
+                : "bg-indigo-500/20 text-indigo-400 border border-indigo-500/50 hover:bg-indigo-500/30"
+            }`}
+          >
+            {isVersusMode ? "Cancelar Versus" : "⚔️ Modo Versus"}
+          </button>
+        </div>
+      </div>
 
       <div className="rounded-lg shadow-lg overflow-hidden">
         <table className="w-full border-collapse">
@@ -125,6 +176,18 @@ export default function Leaderboard({ members, dailyChampionId }: { members: Mem
         open={!!selectedMember} 
         onClose={() => setSelectedMember(null)} 
       />
+
+      {showVersusModal && selectedVersus.length === 2 && (
+        <VersusModal
+          memberA={selectedVersus[0]}
+          memberB={selectedVersus[1]}
+          open={true}
+          onClose={() => {
+            setShowVersusModal(false);
+            setSelectedVersus([]);
+          }}
+        />
+      )}
     </div>
   );
 }
