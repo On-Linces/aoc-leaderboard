@@ -13,7 +13,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export default function Page() {
   const { data, error } = useSWR("/api/aoc", fetcher, { 
     refreshInterval: 900000,
-    revalidateOnFocus: false // Evitar revalidaciones innecesarias al cambiar de pestaña
+    revalidateOnFocus: true // Actualizar al volver a la pestaña (útil tras suspensión)
   });
 
   const [processedMembers, setProcessedMembers] = useState<Member[]>([]);
