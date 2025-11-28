@@ -1,22 +1,27 @@
 "use client";
 import { useEffect, useState, useRef, Fragment } from "react";
+import MemberModal, { Member } from "./MemberModal";
 
-type Member = {
-  name: string | null;
-  stars: number;
-  score: number;
-  starUp?: boolean;
-  rankUp?: boolean;
-};
-
-export default function Leaderboard({ members }: { members: Member[] }) {
+export default function Leaderboard({ members, dailyChampionId }: { members: Member[], dailyChampionId?: string | number | null }) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   const toggleRow = (index: number) => {
-    setExpandedRow(expandedRow === index ? null : index);
+    // En móvil expande, en desktop abre modal
+    if (window.innerWidth < 768) {
+      setExpandedRow(expandedRow === index ? null : index);
+    } else {
+      setSelectedMember(members[index]);
+    }
   };
 
-  const getRowStyle = (index: number) => {
+  const handleNameClick = (e: React.MouseEvent, member: Member) => {
+    e.stopPropagation();
+    setSelectedMember(member);
+  };
+
+  const getRowStyle = (index: number, memberId: string | number) => {
+    if (memberId === dailyChampionId) return "bg-gradient-to-r from-orange-600/20 via-red-500/10 to-transparent border-l-4 border-l-orange-500 text-orange-100 animate-pulse-slow glow-fire";
     if (index === 0) return "bg-gradient-to-r from-yellow-400/10 via-yellow-400/5 to-transparent border-l-4 border-l-yellow-400 text-yellow-100 glow-gold";
     if (index === 1) return "bg-gradient-to-r from-slate-300/10 via-slate-300/5 to-transparent border-l-4 border-l-slate-300 text-slate-100 glow-silver";
     if (index === 2) return "bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent border-l-4 border-l-orange-500 text-orange-100 glow-bronze";
@@ -48,13 +53,21 @@ export default function Leaderboard({ members }: { members: Member[] }) {
                     border-b border-gray-800 
                     transition-all duration-500 
                     cursor-pointer md:cursor-default
-                    ${getRowStyle(i)}
+                    ${getRowStyle(i, m.id)}
                     ${m.rankUp ? "animate-rankup" : ""}
                   `}
                 >
-                  <td className="p-3 font-bold whitespace-nowrap">{i + 1}</td>
-                  <td className="p-3 font-medium truncate max-w-[150px] sm:max-w-xs">
-                    {m.name || "Anónimo"}
+                  <td className="p-3 font-bold whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td 
+                    className="p-3 font-medium max-w-[150px] sm:max-w-xs hover:text-indigo-400 transition-colors cursor-pointer"
+                    onClick={(e) => handleNameClick(e, m)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="truncate">{m.name || "Anónimo"}</span>
+                      {m.id === dailyChampionId && <span className="text-xl animate-bounce">🔥</span>}
+                    </div>
                   </td>
 
                   {/* Desktop View */}
@@ -106,6 +119,12 @@ export default function Leaderboard({ members }: { members: Member[] }) {
           </tbody>
         </table>
       </div>
+
+      <MemberModal 
+        member={selectedMember} 
+        open={!!selectedMember} 
+        onClose={() => setSelectedMember(null)} 
+      />
     </div>
   );
 }

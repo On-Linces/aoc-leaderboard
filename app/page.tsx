@@ -5,16 +5,111 @@ import useSWR from "swr";
 import confetti from "canvas-confetti";
 import LeaderboardTable from "./components/LeaderboardTable";
 import JoinModal from "./components/JoinModal";
-
-type Member = { id?: string | number; name: string | null; stars: number; score: number };
+import { Member } from "./components/MemberModal";
+import Link from "next/link";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function Page() {
-  const { data, error } = useSWR("/api/aoc", fetcher, { refreshInterval: 900000 });
+  const { data, error } = useSWR("/api/aoc", fetcher, { 
+    refreshInterval: 900000,
+    revalidateOnFocus: false // Evitar revalidaciones innecesarias al cambiar de pestaña
+  });
 
-  const members: Member[] = data?.members ?? [];
+  const [processedMembers, setProcessedMembers] = useState<Member[]>([]);
   const last = data?.updated ?? null;
+
+  useEffect(() => {
+    if (!data?.members) return;
+
+    const currentData = data.members as Member[];
+
+    try {
+      const stored = localStorage.getItem("aoc_leaderboard_prev");
+      const prevMap = stored ? JSON.parse(stored) : {};
+
+      const newMembers = currentData.map((m, index) => {
+        // Usar id o name como identificador único
+        const key = String(m.id || m.name || `unknown-${index}`);
+        const prev = prevMap[key];
+
+        let rankUp = false;
+        let starUp = false;
+
+        if (prev) {
+          // Si el índice actual es MENOR que el anterior, subió de rango (ej: 5 -> 3)
+          if (index < prev.rank) rankUp = true;
+          // Si tiene más estrellas
+          if (m.stars > prev.stars) starUp = true;
+        }
+
+        return { ...m, rankUp, starUp };
+      });
+
+      setProcessedMembers(newMembers);
+
+      // Guardar estado actual para la próxima
+      const newMap: Record<string, any> = {};
+      currentData.forEach((m, index) => {
+        const key = String(m.id || m.name || `unknown-${index}`);
+        newMap[key] = { rank: index, stars: m.stars };
+      });
+
+      localStorage.setItem("aoc_leaderboard_prev", JSON.stringify(newMap));
+
+    } catch (e) {
+      console.error("Error accessing localStorage", e);
+      setProcessedMembers(currentData);
+    }
+
+  }, [data]);
+
+  const displayMembers = processedMembers.length > 0 ? processedMembers : (data?.members ?? []);
+
+  // Calcular el campeón del día (el más rápido del último día activo)
+  let dailyChampionId: string | number | null = null;
+  if (displayMembers.length > 0) {
+    // 1. Encontrar el último día con actividad
+    let maxDay = 0;
+    displayMembers.forEach((m: Member) => {
+      Object.keys(m.completion_day_level).forEach(d => {
+        const dayNum = parseInt(d);
+        if (dayNum > maxDay) maxDay = dayNum;
+      });
+    });
+
+    if (maxDay > 0) {
+      const dayStr = String(maxDay);
+      // 2. Buscar quién consiguió la estrella 2 más rápido ese día
+      let bestTime = Infinity;
+      
+      displayMembers.forEach((m: Member) => {
+        const dayData = m.completion_day_level[dayStr];
+        if (dayData?.["2"]) {
+           const ts = dayData["2"].get_star_ts;
+           if (ts < bestTime) {
+             bestTime = ts;
+             dailyChampionId = m.id;
+           }
+        }
+      });
+      
+      // Si nadie tiene la estrella 2, buscar la estrella 1
+      if (!dailyChampionId) {
+         bestTime = Infinity;
+         displayMembers.forEach((m: Member) => {
+          const dayData = m.completion_day_level[dayStr];
+          if (dayData?.["1"]) {
+             const ts = dayData["1"].get_star_ts;
+             if (ts < bestTime) {
+               bestTime = ts;
+               dailyChampionId = m.id;
+             }
+          }
+        });
+      }
+    }
+  }
 
   const [open, setOpen] = useState(false);
 
@@ -160,13 +255,18 @@ export default function Page() {
       </div>
 
       <div className="max-w-4xl mx-auto mt-6">
-        <LeaderboardTable members={members} />
+        <LeaderboardTable members={displayMembers} dailyChampionId={dailyChampionId} />
 
-        <div className="text-center text-sm text-slate-400 mt-4">
+        <div className="text-center text-sm text-slate-400 mt-4 flex flex-col gap-1">
           {error ? (
             <span>Error cargando leaderboard</span>
           ) : last ? (
-            <span>Última actualización: {new Date(last).toLocaleString()}</span>
+            <>
+              <span>Última actualización: {new Date(last).toLocaleString()}</span>
+              <span className="text-xs text-slate-500">
+                (Se actualiza cada 15 min para respetar las reglas de AoC)
+              </span>
+            </>
           ) : (
             <span>Cargando...</span>
           )}
