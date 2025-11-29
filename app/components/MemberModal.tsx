@@ -38,8 +38,8 @@ export default function MemberModal({
 }) {
   if (!open || !member) return null;
 
-  // Generar array de días 1-25
-  const days = Array.from({ length: 25 }, (_, i) => i + 1);
+  // Generar array de días 1-12
+  const days = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const formatTime = (ts: number) => {
     if (!ts) return "-";
@@ -75,20 +75,20 @@ export default function MemberModal({
   }
 
   // 2. 🎒 Colección de Estrellas
-  if (member.stars >= 50) {
-    addBadge({ icon: "🌌", name: "Maestro del Universo", desc: "50 Estrellas", color: "text-purple-400 bg-purple-400/10 border-purple-400/20" });
-  } else if (member.stars >= 25) {
-    addBadge({ icon: "🌟", name: "Cazador de Estrellas", desc: "25+ Estrellas", color: "text-pink-400 bg-pink-400/10 border-pink-400/20" });
-  } else if (member.stars >= 10) {
-    addBadge({ icon: "🎒", name: "Coleccionista", desc: "10+ Estrellas", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" });
-  } else if (member.stars >= 5) {
-    addBadge({ icon: "👶", name: "Iniciado", desc: "5+ Estrellas", color: "text-slate-400 bg-slate-400/10 border-slate-400/20" });
+  if (member.stars >= 24) {
+    addBadge({ icon: "🌌", name: "Maestro del Universo", desc: "24 Estrellas", color: "text-purple-400 bg-purple-400/10 border-purple-400/20" });
+  } else if (member.stars >= 12) {
+    addBadge({ icon: "🌟", name: "Cazador de Estrellas", desc: "12+ Estrellas", color: "text-pink-400 bg-pink-400/10 border-pink-400/20" });
+  } else if (member.stars >= 6) {
+    addBadge({ icon: "🎒", name: "Coleccionista", desc: "6+ Estrellas", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" });
+  } else if (member.stars >= 3) {
+    addBadge({ icon: "👶", name: "Iniciado", desc: "3+ Estrellas", color: "text-slate-400 bg-slate-400/10 border-slate-400/20" });
   }
 
   // 3. 🔥 Rachas
   let maxStreak = 0;
   let currentStreak = 0;
-  for (let d = 1; d <= 25; d++) {
+  for (let d = 1; d <= 12; d++) {
     if (member.completion_day_level[String(d)]) {
       currentStreak++;
     } else {
@@ -98,14 +98,14 @@ export default function MemberModal({
   }
   maxStreak = Math.max(maxStreak, currentStreak);
 
-  if (maxStreak >= 25) {
-    addBadge({ icon: "👑", name: "Dios del Código", desc: "Racha de 25 días", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" });
-  } else if (maxStreak >= 14) {
-    addBadge({ icon: "🌋", name: "Imparable", desc: "Racha de 14+ días", color: "text-red-500 bg-red-500/10 border-red-500/20" });
+  if (maxStreak >= 12) {
+    addBadge({ icon: "👑", name: "Dios del Código", desc: "Racha de 12 días", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" });
   } else if (maxStreak >= 7) {
-    addBadge({ icon: "🔥🔥", name: "En Llamas", desc: "Racha de 7+ días", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" });
-  } else if (maxStreak >= 3) {
-    addBadge({ icon: "🔥", name: "Calentando", desc: "Racha de 3+ días", color: "text-orange-300 bg-orange-300/10 border-orange-300/20" });
+    addBadge({ icon: "🌋", name: "Imparable", desc: "Racha de 7+ días", color: "text-red-500 bg-red-500/10 border-red-500/20" });
+  } else if (maxStreak >= 4) {
+    addBadge({ icon: "🔥🔥", name: "En Llamas", desc: "Racha de 4+ días", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" });
+  } else if (maxStreak >= 2) {
+    addBadge({ icon: "🔥", name: "Calentando", desc: "Racha de 2+ días", color: "text-orange-300 bg-orange-300/10 border-orange-300/20" });
   }
 
   // 4. Horarios

@@ -159,12 +159,12 @@ export default function Page() {
     );
   }, []);
 
-  // --- Fireworks on Dec 25 ---
+  // --- Fireworks on Dec 12 ---
   useEffect(() => {
     const now = new Date();
     // Month is 0-indexed (11 = December)
-    // SIMULACIÓN ACTIVADA: Cambiar a (now.getMonth() === 11 && now.getDate() === 25) para producción
-    if (now.getMonth() === 11 && now.getDate() === 25) {
+    // SIMULACIÓN ACTIVADA: Cambiar a (now.getMonth() === 11 && now.getDate() === 12) para producción
+    if (now.getMonth() === 11 && now.getDate() === 12) {
       const duration = 15 * 1000;
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };

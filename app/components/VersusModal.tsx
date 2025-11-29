@@ -24,7 +24,7 @@ export default function VersusModal({
   let accumStarsA = 0;
   let accumStarsB = 0;
 
-  for (let day = 1; day <= 25; day++) {
+  for (let day = 1; day <= 12; day++) {
     const d = String(day);
     const dataA = memberA.completion_day_level[d];
     const dataB = memberB.completion_day_level[d];
@@ -73,7 +73,7 @@ export default function VersusModal({
   const padding = 20;
   const maxStars = Math.max(accumStarsA, accumStarsB, 10); // Minimo escala de 10
   
-  const getX = (day: number) => padding + (day / 25) * (width - 2 * padding);
+  const getX = (day: number) => padding + (day / 12) * (width - 2 * padding);
   const getY = (stars: number) => height - padding - (stars / maxStars) * (height - 2 * padding);
 
   const pointsA = chartData.map(d => `${getX(d.day)},${getY(d.starsA)}`).join(" ");
