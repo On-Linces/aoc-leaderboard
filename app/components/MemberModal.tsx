@@ -43,7 +43,8 @@ export default function MemberModal({
 
   const formatTime = (ts: number) => {
     if (!ts) return "-";
-    return new Date(ts * 1000).toLocaleString("es-MX", {
+    // Ajuste de -1 hora solicitado
+    return new Date((ts - 3600) * 1000).toLocaleString("es-MX", {
       month: "short",
       day: "numeric",
       hour: "2-digit",

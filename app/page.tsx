@@ -119,6 +119,7 @@ export default function Page() {
 
   useEffect(() => {
     const target = new Date(`${new Date().getFullYear()}-12-01T00:00:00`);
+    target.setHours(target.getHours() - 1); // Ajuste de -1 hora
 
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -262,7 +263,7 @@ export default function Page() {
             <span>Error cargando leaderboard</span>
           ) : last ? (
             <>
-              <span>Última actualización: {new Date(last).toLocaleString()}</span>
+              <span>Última actualización: {new Date(new Date(last).getTime() - 3600000).toLocaleString()}</span>
               <span className="text-xs text-slate-500">
                 (Se actualiza cada 15 min para respetar las reglas de AoC)
               </span>
