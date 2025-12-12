@@ -5,6 +5,7 @@ import useSWR from "swr";
 import confetti from "canvas-confetti";
 import LeaderboardTable from "./components/LeaderboardTable";
 import JoinModal from "./components/JoinModal";
+import Podium from "./components/Podium";
 import { Member } from "./components/MemberModal";
 import Link from "next/link";
 
@@ -112,6 +113,7 @@ export default function Page() {
   }
 
   const [open, setOpen] = useState(false);
+  const [showPodium, setShowPodium] = useState(true);
 
   // --- Cuenta regresiva ---
   const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
@@ -256,7 +258,33 @@ export default function Page() {
       </div>
 
       <div className="max-w-4xl mx-auto mt-6">
-        <LeaderboardTable members={displayMembers} dailyChampionId={dailyChampionId} />
+        {/* Toggle View */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-slate-800/50 p-1 rounded-lg flex gap-1 border border-white/10">
+            <button
+              onClick={() => setShowPodium(true)}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition ${
+                showPodium ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              🏆 Podio
+            </button>
+            <button
+              onClick={() => setShowPodium(false)}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition ${
+                !showPodium ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              📋 Tabla Completa
+            </button>
+          </div>
+        </div>
+
+        {showPodium ? (
+          <Podium members={[...displayMembers].sort((a, b) => b.score - a.score || b.stars - a.stars).slice(0, 3)} />
+        ) : (
+          <LeaderboardTable members={displayMembers} dailyChampionId={dailyChampionId} />
+        )}
 
         <div className="text-center text-sm text-slate-400 mt-4 flex flex-col gap-1">
           {error ? (
