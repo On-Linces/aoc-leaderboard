@@ -1,9 +1,8 @@
-
 {
   "crons": [
     {
-      "path": "/api/aoc",
-      "schedule": "*/100000 * * * *"
+      "path": "/api/daily-task",
+      "schedule": "0 0 * * *"
     }
   ]
 }
