@@ -224,7 +224,7 @@ export default function Page() {
         {hasStarted ? (
           <div className="inline-block p-6 rounded-2xl bg-green-500/20 backdrop-blur-md border border-green-500/50 shadow-[0_0_30px_rgba(0,255,100,0.3)] animate-popIn">
             <span className="text-2xl md:text-4xl font-bold text-white drop-shadow-md">
-              🚀 ¡Advent of Code ha comenzado! 🎄
+              🚀 ¡Advent of Code ha Terminado! 🎄
             </span>
           </div>
         ) : timeLeft ? (
